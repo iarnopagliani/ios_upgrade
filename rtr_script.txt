@@ -1,3 +1,5 @@
+!Ref. https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/sec_usr_ssh/configuration/15-s/sec-usr-ssh-15-s-book/sec-secure-copy.html
+conf t
 hostname R1
 ip domain name domain.local
 aaa new-model

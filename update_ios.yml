@@ -1,14 +1,15 @@
 ---
 - name: "ROUTER >> Get Facts NGKIT Config"
   hosts: R1
-  gather_facts: False
+  gather_facts: Falsein
   tasks:
-    - name: "LOG >> Get ansible date/time facts"
+    # Retry date time so I can it as a prefix in creation of a file with router fact
+    - name: "SYS >> Get ansible date/time facts"
       setup:
         filter: "ansible_date_time"
         gather_subset: "!all"
     
-    - name: "LOG >> Store DTG as fact"
+    - name: "SYS >> Store DTG as fact"
       set_fact:
         DTG: "{{ ansible_date_time.date }}"  # "ansible_date_time": { "date": "2020-01-07"}
     
@@ -18,32 +19,37 @@
           #- hardware
           - "!config"
       register: "RTR_FACTS"
-    # For testing  
+    
+    # Print Fract for testing when debug id set to True
     - name: "SYS >> Printing facs...."
       debug:
         #msg: "{{ ansible_net_version }} vs {{ GOLD_IOS_VER }}"
         #ansible_net_model == C1111-4PLTEEA
         msg: "{{ RTR_FACTS }}"
       when: debug
+    
+    # Save fat in file like: 2020-04-01_R1_facts.cfg
     - name: "SYS >> Save Facts in file"
       copy:
         content="{{ RTR_FACTS | to_nice_json }}"
         dest="config/{{ DTG }}_{{ inventory_hostname }}_facts.cfg"
     
-    - name: "SYS >> UPGRADE IOS IMAGE IF NOT COMPLIANT"
+    #Block updating ios in csase is not equal to the gold image
+    - name: "BLOCK >> UPGRADE IOS IMAGE IF NOT COMPLIANT"
       block:
       - name: "NET >> Enable SCP"
         ios_config:
           commands: "ip scp server enable"
-
+        
       - name: "NET >> SCP Copy {{ ios_gold_file }} to Router {{ ansible_net_model }}"
         net_put:
           src: "{{ ios_path }}{{ ios_gold_file }}"
           dest : "{{ ios_gold_file }}"
         vars:
           ansible_command_timeout: 1800
+        when: upload # Usefull to optimizing other task, just for troubleshooting
 
-      - name: "SYS >> Set New IOS and reboot Task  for {{ ansible_net_model }}"
+      - name: "NET >> Set New IOS and reboot Task  for {{ ansible_net_model }}"
         ios_config:
           commands:
           - "no boot system"
@@ -58,8 +64,9 @@
             - command: "reload"
               prompt: '[confirm]'
               answer: "\r"
-              
-      - name: "SYS >> WAIT FOR ROUTER TO RETURN"
+        when: upload # Usefull to optimizing other task, just for troubleshooting
+
+      - name: "SYS >> Wait for router to return"
         wait_for:
           host: "{{ ansible_host }}"
           port: 22
@@ -77,4 +84,4 @@
     - name: "Assert that the IOS ver is correct"
       assert:
         that:
-          - ios_gold_file == ansible_net_version
+          - ios_gold_ver == ansible_net_version

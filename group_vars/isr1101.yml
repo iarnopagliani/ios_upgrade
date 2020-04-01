@@ -1,4 +1,4 @@
 ---
 ios_gold_file: "c1100-universalk9_ias.16.12.03.SPA.bin"
-ios_gold_ver: "{{ ISR_GOLD_IOS_FILE.split('c1100-universalk9_ias.')[1].split('.SPA.bin')[0] }}"
+ios_gold_ver: "{{ ios_gold_file.split('c1100-universalk9_ias.')[1].split('.SPA.bin')[0] }}"
 ...

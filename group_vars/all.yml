@@ -10,6 +10,8 @@ ansible_network_os: "ios"
 
 #IOS are store outside git repository. Please download it from cisco.com
 ios_path: "../images/gold/"
-# Debug switch used in the tasks:
-debug: "False"
+# Debug switch used in the tasks; normaly False
+debug: "False" 
+#Used for skipping scp ioperations; normaly True
+upload: "True"
 ...
