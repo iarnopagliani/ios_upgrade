@@ -5,14 +5,14 @@ This Ansible playbook runs upgrade task for Cisco IOS/XE
 > Email:    iarno.pagliani@gmail.com\
 > Twitter:  @iarnopagliani
 
-  * [IOS_image](#IOS_Image)
-  * [Variables](#Variables)
-  * [Command](#Command)
-  * [Supported platforms](#supported-platforms)
-  * [Output files](#output-files)
-  * [Timeout](#Timeout)
+  * [IOS Image](#ios-image)
+  * [Variables](#variables)
+  * [Command](#command)
+  * [Supported Platforms](#supported-platforms)
+  * [Output Files](#output-files)
+  * [Timeout](#timeout)
 
-# IOS_Image
+# IOS Image
 IOS are not provided and they are stored outside git repository. Please download them from cisco.com
 ios_path: "../images/gold/"
 
@@ -26,7 +26,7 @@ ios_path: "../images/gold/"
 Use Command: ansible-playbook update_ios.yml 
 Remenber to use verbose mode: -v or -vv or -vvv for ansible debug
 
-# Supported platforms
+# Supported Platforms
 The playbook currently provides Ansible task files for Cisco IOS/IOS-XE ISR1101 and IR1101.
 ```
 > ansible --version
@@ -34,11 +34,11 @@ ansible 2.9.6
 ```
 # Timeout
 A value of 1800 secs in task `ansible_command_timeout: 1800` has been configured for copy IOS file
-# Output files
+
+# Output Files
 At the end of the playbook, the following filesystem components are created.
 ```
 tree
-.
 ├── README.md
 ├── RN
 │   └── IR1101-release-notes-16-12-3.pdf
