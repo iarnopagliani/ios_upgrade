@@ -3,7 +3,10 @@ ip domain name domain.local
 aaa new-model
 aaa authorization exec default local 
 aaa session-id common
-username admin privilege 15 secret admin00
-line vty 0 4
+username ansible privilege 15 secret ansible
+int g0/0/0
+ ip add 192.168.2.3 255.255.255.0
+ no shutdown
+ crypto key generate rsa modulus 2048
+ line vty 0 4
  transport input ssh
-crypto key generate rsa modulus 2048

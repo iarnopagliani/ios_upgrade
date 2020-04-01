@@ -4,8 +4,8 @@
 # not can use the legacy provider credentials below with 'local' connection.
 ansible_python_interpreter: "/usr/bin/env python"
 ansible_connection: network_cli
-ansible_user: "admin"
-ansible_password: "admin00"
+ansible_user: "ansible"
+ansible_password: "ansible"
 ansible_network_os: "ios"
 
 #IOS are store outside git repository. Please download it from cisco.com
