@@ -4,9 +4,16 @@
 # not can use the legacy provider credentials below with 'local' connection.
 ansible_python_interpreter: "/usr/bin/env python"
 ansible_connection: network_cli
-ansible_user: "ansible"
-ansible_password: "ansible"
 ansible_network_os: "ios"
+ansible_user: "ansible"
+#ansible_password: "ansible"
+ansible_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          63363465316532333866306463623266326635356164393839386561313762313961376361363134
+          6463306662376138306365356566663262373530376265640a316531666336646431623937396632
+          63383131613966333462363132616636646331353564333939383238613331633863323330306539
+          3161656536303962380a303638383136353337353634373734396237373030396130393235663539
+          3363
 
 #IOS are store outside git repository. Please download it from cisco.com
 ios_path: "../images/gold/"

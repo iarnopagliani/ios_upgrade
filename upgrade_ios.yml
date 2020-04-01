@@ -28,6 +28,11 @@
         msg: "{{ RTR_FACTS }}"
       when: debug
     
+    - name: "Assert that the IOS not needs upgrade"
+      assert:
+        that:
+          - ios_gold_ver != ansible_net_version
+
     # Save fat in file like: 2020-04-01_R1_facts.cfg
     - name: "SYS >> Save Facts in file"
       copy:
@@ -45,8 +50,6 @@
         net_put:
           src: "{{ ios_path }}{{ ios_gold_file }}"
           dest : "{{ ios_gold_file }}"
-        vars:
-          ansible_command_timeout: 1800
         when: upload # Usefull to optimizing other task, just for troubleshooting
 
       - name: "NET >> Set New IOS and reboot Task  for {{ ansible_net_model }}"
@@ -71,17 +74,5 @@
           host: "{{ ansible_host }}"
           port: 22
           delay: 120
-        vars:
-          ansible_command_timeout: 1800
         delegate_to: localhost
       when: RTR_FACTS.ansible_facts.ansible_net_version != ios_gold_file
-  
-    - name: "SYS >> Gathering Facts..."
-      ios_facts:
-        gather_subset:
-          - "!config"
-
-    - name: "Assert that the IOS ver is correct"
-      assert:
-        that:
-          - ios_gold_ver == ansible_net_version

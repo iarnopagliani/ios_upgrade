@@ -10,5 +10,6 @@ int g0/0/0
  ip add 192.168.2.3 255.255.255.0
  no shutdown
  crypto key generate rsa modulus 2048
- line vty 0 4
+line vty 0 4
+ exec-timeout 30 0
  transport input ssh
