@@ -18,13 +18,13 @@
           #- hardware
           - "!config"
       register: "RTR_FACTS"
-      
+    # For testing  
     - name: "SYS >> Printing facs...."
       debug:
         #msg: "{{ ansible_net_version }} vs {{ GOLD_IOS_VER }}"
         #ansible_net_model == C1111-4PLTEEA
         msg: "{{ RTR_FACTS }}"
-    
+      when: debug
     - name: "SYS >> Save Facts in file"
       copy:
         content="{{ RTR_FACTS | to_nice_json }}"
@@ -36,7 +36,7 @@
         ios_config:
           commands: "ip scp server enable"
 
-      - name: "NET >> SCP Copy file to Router {{ ansible_net_model }}"
+      - name: "NET >> SCP Copy {{ ios_gold_file }} to Router {{ ansible_net_model }}"
         net_put:
           src: "{{ ios_path }}{{ ios_gold_file }}"
           dest : "{{ ios_gold_file }}"

@@ -1,9 +1,15 @@
 ---
+# The default connectivity variables are below. This playbook assumes that all
+# network modules support the 'network_cli' connection method; those that do
+# not can use the legacy provider credentials below with 'local' connection.
+ansible_python_interpreter: "/usr/bin/env python"
 ansible_connection: network_cli
-ansible_user: "srv_ansible"
+ansible_user: "admin"
 ansible_password: "admin00"
-#ansible_ssh_pass: "admin00"
 ansible_network_os: "ios"
+
 #IOS are store outside git repository. Please download it from cisco.com
 ios_path: "../images/gold/"
+# Debug switch used in the tasks:
+debug: "False"
 ...
