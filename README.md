@@ -1,5 +1,6 @@
 # ios_upgrade
 This Ansible playbook runs upgrade task for Cisco IOS/XE.
+
 The playbook REBOOT the Router !!!!
 
 > Contact information:\
@@ -26,6 +27,7 @@ ios_path: `../images/gold/`
 
 # Command
 Use Command: `ansible-playbook upgrade_ios.yml`
+
 Remenber to use verbose mode: `-v` or `-vv` or `-vvv` for ansible debug.
 
 # Vault Password
