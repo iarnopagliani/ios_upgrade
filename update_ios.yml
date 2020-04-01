@@ -1,0 +1,80 @@
+---
+- name: "ROUTER >> Get Facts NGKIT Config"
+  hosts: R1
+  gather_facts: False
+  tasks:
+    - name: "LOG >> Get ansible date/time facts"
+      setup:
+        filter: "ansible_date_time"
+        gather_subset: "!all"
+    
+    - name: "LOG >> Store DTG as fact"
+      set_fact:
+        DTG: "{{ ansible_date_time.date }}"  # "ansible_date_time": { "date": "2020-01-07"}
+    
+    - name: "SYS >> Gathering Facts..."
+      ios_facts:
+        gather_subset:
+          #- hardware
+          - "!config"
+      register: "RTR_FACTS"
+      
+    - name: "SYS >> Printing facs...."
+      debug:
+        #msg: "{{ ansible_net_version }} vs {{ GOLD_IOS_VER }}"
+        #ansible_net_model == C1111-4PLTEEA
+        msg: "{{ RTR_FACTS }}"
+    
+    - name: "SYS >> Save Facts in file"
+      copy:
+        content="{{ RTR_FACTS | to_nice_json }}"
+        dest="config/{{ DTG }}_{{ inventory_hostname }}_facts.cfg"
+    
+    - name: "SYS >> UPGRADE IOS IMAGE IF NOT COMPLIANT"
+      block:
+      - name: "NET >> Enable SCP"
+        ios_config:
+          commands: "ip scp server enable"
+
+      - name: "NET >> SCP Copy file to Router {{ ansible_net_model }}"
+        net_put:
+          src: "{{ ios_path }}{{ ios_gold_file }}"
+          dest : "{{ ios_gold_file }}"
+        vars:
+          ansible_command_timeout: 1800
+
+      - name: "SYS >> Set New IOS and reboot Task  for {{ ansible_net_model }}"
+        ios_config:
+          commands:
+          - "no boot system"
+          - "boot system bootflash:{{ ios_gold_file }}"
+          - "no ip scp server enable"
+          match: none
+          save_when: always
+
+      - name: "NET >> Reboot Router"
+        ios_command:
+          commands:
+            - command: "reload"
+              prompt: '[confirm]'
+              answer: "\r"
+              
+      - name: "SYS >> WAIT FOR ROUTER TO RETURN"
+        wait_for:
+          host: "{{ ansible_host }}"
+          port: 22
+          delay: 120
+        vars:
+          ansible_command_timeout: 1800
+        delegate_to: localhost
+      when: RTR_FACTS.ansible_facts.ansible_net_version != ios_gold_file
+  
+    - name: "SYS >> Gathering Facts..."
+      ios_facts:
+        gather_subset:
+          - "!config"
+
+    - name: "Assert that the IOS ver is correct"
+      assert:
+        that:
+          - ios_gold_file == ansible_net_version

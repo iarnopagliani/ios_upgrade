@@ -1,0 +1,9 @@
+hostname R1
+ip domain name domain.local
+aaa new-model
+aaa authorization exec default local 
+aaa session-id common
+username srv_ansible privilege 15 secret 9 $9$nkTprjGvBGLxQU$ueJNCKZoL856dx25u9UywZOSZukv32yzOjfRrMKvqzc
+line vty 0 4
+ transport input ssh
+crypto key generate rsa modulus 2048

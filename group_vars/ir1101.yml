@@ -1,0 +1,4 @@
+---
+ios_gold_file: "ir1101-universalk9.16.12.03.SPA.bin"
+ios_gold_ver: "{{ IR_GOLD_IOS_FILE.split('ir1101-universalk9.')[1].split('.SPA.bin')[0] }}"
+...
