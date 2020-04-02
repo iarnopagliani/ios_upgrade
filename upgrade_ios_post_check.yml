@@ -1,0 +1,36 @@
+---
+- name: "ROUTER >> Get Facts NGKIT Config"
+  hosts: R1
+  gather_facts: False
+  tasks:
+
+    - name: "SYS >> Gathering Facts..."
+      ios_facts:
+        gather_subset:
+          - "!config"
+    
+    - name: "SYS >> Assert that the IOS not needs upgrade"
+      assert:
+        that:
+          - ios_gold_ver == ansible_net_version
+        success_msg: "Firmware successful upgraded. GOOD..."
+        fail_msg: "Problem with the firmware upgrade."
+    
+    # Include inventorty playbook for the devices. It can be run individualy"
+    - name: "SYS >> Check IOS upgrade needed Set True"
+      set_fact:
+        UPGRADE: True
+      when: ios_gold_ver != ansible_net_version
+    
+    - name: "SYS >> Check IOS upgrade needed Set False"
+      set_fact:
+        UPGRADE: False
+      when: ios_gold_ver == ansible_net_version
+
+    - name: "SYS >> Create Inventory file"
+      shell: "echo HOSTNAME,SERIAL,IP_ADDR,IOS,UPGRADE > ./inventory.csv"
+      delegate_to: localhost
+    
+    - name: "SYS >> Save results"
+      shell: "echo {{ ansible_net_hostname }},{{ ansible_net_serialnum }},{{ ansible_net_all_ipv4_addresses[0] }},{{ ansible_net_version }},{{ UPGRADE }} >> ./inventory.csv"
+      delegate_to: localhost

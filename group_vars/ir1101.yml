@@ -1,4 +1,8 @@
 ---
 ios_gold_file: "ir1101-universalk9.16.12.03.SPA.bin"
 ios_gold_ver: "{{ ios_gold_file.split('ir1101-universalk9.')[1].split('.SPA.bin')[0] }}"
+#md5 ios_file_name or copy on cisco.com website download page
+ios_md5: "6393a2e69f8d84b85e5688375ebd7781"
+#shasum -a 512 ios_file_name or copy on cisco.com website download page
+ios_sha512: "5314360cab6556acff8169013f97193f435d8228b0d31c450dafbd012f57f706ad0c3dbbe592a69b1164e2f6567b844364554c14e104f47fc03d82059218d4be"
 ...

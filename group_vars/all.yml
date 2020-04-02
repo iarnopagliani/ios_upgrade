@@ -21,4 +21,6 @@ ios_path: "../images/gold/"
 debug: "False" 
 #Used for skipping scp ioperations; normaly True
 upload: "True"
+#Used for reboot the router; normaly True
+reboot: "True"
 ...

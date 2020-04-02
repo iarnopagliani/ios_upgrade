@@ -1,8 +1,9 @@
 ---
 - name: "ROUTER >> Get Facts NGKIT Config"
   hosts: R1
-  gather_facts: Falsein
+  gather_facts: False
   tasks:
+    
     # Retry date time so I can it as a prefix in creation of a file with router fact
     - name: "SYS >> Get ansible date/time facts"
       setup:
@@ -27,18 +28,20 @@
         #ansible_net_model == C1111-4PLTEEA
         msg: "{{ RTR_FACTS }}"
       when: debug
-    
-    - name: "Assert that the IOS not needs upgrade"
-      assert:
-        that:
-          - ios_gold_ver != ansible_net_version
 
     # Save fat in file like: 2020-04-01_R1_facts.cfg
     - name: "SYS >> Save Facts in file"
       copy:
         content="{{ RTR_FACTS | to_nice_json }}"
         dest="config/{{ DTG }}_{{ inventory_hostname }}_facts.cfg"
-    
+   
+    - name: "SYS >> Assert that the IOS needs upgrade"
+      assert:
+        that:
+          - ios_gold_ver == ansible_net_version
+        success_msg: "Firmware does not requires upgrade. GOOD..."
+        fail_msg: "Firmware requires upgrade. STARTING..."
+
     #Block updating ios in csase is not equal to the gold image
     - name: "BLOCK >> UPGRADE IOS IMAGE IF NOT COMPLIANT"
       block:
@@ -51,7 +54,19 @@
           src: "{{ ios_path }}{{ ios_gold_file }}"
           dest : "{{ ios_gold_file }}"
         when: upload # Usefull to optimizing other task, just for troubleshooting
-
+      
+      - name: "SYS >> Check MD5 "
+        ios_command:
+          commands: verify /md5 bootflash:{{ ios_gold_file }} {{ ios_md5 }}
+        register: IOS_VERIFY
+      
+      - name: "SYS >> Assert that the IOS checksum is Ok"
+        assert:
+          that:
+            - IOS_VERIFY.stdout[0].split('=')[1].lstrip() == ios_md5
+          success_msg: "Checksum is OK. GOOD..."
+          fail_msg: "Firmware Checksum Problem, Please verify..."
+      
       - name: "NET >> Set New IOS and reboot Task  for {{ ansible_net_model }}"
         ios_config:
           commands:
@@ -61,18 +76,19 @@
           match: none
           save_when: always
 
-      - name: "NET >> Reboot Router"
+      - name: "NET >> Reboot Router !!!"
         ios_command:
           commands:
             - command: "reload"
               prompt: '[confirm]'
               answer: "\r"
-        when: upload # Usefull to optimizing other task, just for troubleshooting
+        when: reboot # Usefull to optimizing other task, just for troubleshooting
 
       - name: "SYS >> Wait for router to return"
         wait_for:
           host: "{{ ansible_host }}"
           port: 22
-          delay: 120
+          delay: 310
+          timeout: 600
         delegate_to: localhost
-      when: RTR_FACTS.ansible_facts.ansible_net_version != ios_gold_file
+      #when: RTR_FACTS.ansible_facts.ansible_net_version != ios_gold_file

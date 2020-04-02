@@ -1,7 +1,7 @@
 # ios_upgrade
 This Ansible playbook runs upgrade task for Cisco IOS/XE.
 
-The playbook REBOOT the Router !!!!
+The playbook bu default REBOOT the Router !!!! To change this behavier see `reboot` variabile
 
 > Contact information:\
 > Email:    iarno.pagliani@gmail.com\
@@ -24,6 +24,8 @@ ios_path: `../images/gold/`
     `debug: "False"`
 - Used for skipping scp operations; normaly True
     `upload: "False"`
+- Used for reboot the router; normaly True
+    `reboot: "True"`
 
 # Command
 Use Command: `ansible-playbook upgrade_ios.yml`
@@ -59,14 +61,17 @@ At the end of the playbook, the following filesystem components are created.
 │   └── IR1101-release-notes-16-12-3.pdf
 ├── ansible.cfg
 ├── config
-│   └── 2020-04-01_R1_facts.cfg
+│   ├── 2020-04-01_R1_facts.cfg
+│   └── 2020-04-02_R1_facts.cfg
 ├── group_vars
 │   ├── all.yml
 │   ├── ir1101.yml
 │   └── isr1101.yml
 ├── host_vars
 ├── hosts.yml
+├── inventory.csv
 ├── rtr_script.txt
 ├── templates
-└── upgrade_ios.yml
+├── upgrade_ios.yml
+└── upgrade_ios_post_check.yml
 ```
