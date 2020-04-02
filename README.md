@@ -1,8 +1,8 @@
 # ios_upgrade
 This Ansible playbook runs upgrade task for Cisco IOS/XE.
 
-The playbook bu default REBOOT the Router !!!! To change this behavier see `reboot` variabile
-
+The playbook by default REBOOT the Router !!!! To change this behavier see `reboot` variabile
+a second playbook `upgrade_ios_post_check.yml` can be used for checking that IOS has been upgraded and creates a simple csv file.
 > Contact information:\
 > Email:    iarno.pagliani@gmail.com\
 > Twitter:  @iarnopagliani
