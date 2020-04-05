@@ -83,12 +83,32 @@
               prompt: '[confirm]'
               answer: "\r"
         when: reboot # Usefull to optimizing other task, just for troubleshooting
-
+    #We need to make sure the current connection to the network device is closed so that the socket can be reestablished 
+    #to the network device after the reboot takes place.  If the connection is not closed and the command timeout is longer 
+    #than the time it takes to reboot, the persistent connection will attempt to reuse the closed SSH connection resulting in the failure 
+    #“Socket is closed”. A correct Ansible Playbook looks like this:
+      - name: "SYS >>reset the connection"
+        meta: reset_connection
+      
       - name: "SYS >> Wait for router to return"
         wait_for:
           host: "{{ ansible_host }}"
           port: 22
-          delay: 310
-          timeout: 600
+          delay: 60
+        retries: 3
+        delay: 60
         delegate_to: localhost
-      #when: RTR_FACTS.ansible_facts.ansible_net_version != ios_gold_file
+
+    #when: RTR_FACTS.ansible_facts.ansible_net_version != ios_gold_file
+    - name: "SYS >> Gathering Facts..."
+      ios_facts:
+        gather_subset:
+          - "!config"
+
+    - name: "SYS >> Assert that the IOS not needs upgrade"
+      assert:
+        that:
+          - ios_gold_ver == ansible_net_version
+        success_msg: "Firmware successful upgraded. GOOD..."
+        fail_msg: "Problem with the firmware upgrade."
+    
