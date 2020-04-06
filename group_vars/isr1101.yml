@@ -1,8 +1,11 @@
 ---
 ios_gold_file: "c1100-universalk9_ias.16.12.03.SPA.bin"
-ios_gold_ver: "{{ ios_gold_file.split('c1100-universalk9_ias.')[1].split('.SPA.bin')[0] }}"
 #md5 ios_file_name or copy on cisco.com website download page
 ios_md5: "ebfcf2f266822f006b9b8ebfef80b217"
+# For testing only
+#ios_gold_file: "c1100-universalk9_ias.16.10.03.SPA.bin"
+#ios_md5: "28f2cf23f629021b96b0566ea3d31940"
+ios_gold_ver: "{{ ios_gold_file.split('c1100-universalk9_ias.')[1].split('.SPA.bin')[0] }}"
 #shasum -a 512 ios_file_name or copy on cisco.com website download page
 ios_sha512: "ce93ed5e65b8f461b8b07f46a124e1aa7e836d33c5127b92adaf01d56a247202e8109ef40d8340531300d52a940788734829fbc1e6dcfb40688584e1482049b6"
 ...

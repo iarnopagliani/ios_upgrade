@@ -28,9 +28,9 @@
       when: ios_gold_ver == ansible_net_version
 
     - name: "SYS >> Create Inventory file"
-      shell: "echo HOSTNAME,SERIAL,IP_ADDR,IOS,UPGRADE > ./inventory.csv"
+      shell: "echo HOSTNAME,SERIAL,IP_ADDR,MAC_ADDR,IOS,UPGRADE > ./inventory.csv"
       delegate_to: localhost
     
     - name: "SYS >> Save results"
-      shell: "echo {{ ansible_net_hostname }},{{ ansible_net_serialnum }},{{ ansible_net_all_ipv4_addresses[0] }},{{ ansible_net_version }},{{ UPGRADE }} >> ./inventory.csv"
+      shell: "echo {{ ansible_net_hostname }},{{ ansible_net_serialnum }},{{ ansible_net_all_ipv4_addresses[0] }},{{ ansible_net_interfaces['GigabitEthernet0/0/0']['macaddress'] }},{{ ansible_net_version }},{{ UPGRADE }} >> ./inventory.csv"
       delegate_to: localhost

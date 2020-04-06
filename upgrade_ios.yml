@@ -33,14 +33,14 @@
     - name: "SYS >> Save Facts in file"
       copy:
         content="{{ RTR_FACTS | to_nice_json }}"
-        dest="config/{{ DTG }}_{{ inventory_hostname }}_facts.cfg"
+        dest="facts/{{ DTG }}_{{ inventory_hostname }}_facts.cfg"
    
     - name: "SYS >> Assert that the IOS needs upgrade"
       assert:
         that:
-          - ios_gold_ver == ansible_net_version
-        success_msg: "Firmware does not requires upgrade. GOOD..."
-        fail_msg: "Firmware requires upgrade. STARTING..."
+          - ios_gold_ver != ansible_net_version
+        success_msg: "Firmware requires upgrade. STARTING..."
+        fail_msg: "Firmware does not requires upgrade. GOOD..."
 
     #Block updating ios in csase is not equal to the gold image
     - name: "BLOCK >> UPGRADE IOS IMAGE IF NOT COMPLIANT"
@@ -50,6 +50,8 @@
           commands: "ip scp server enable"
         
       - name: "NET >> SCP Copy {{ ios_gold_file }} to Router {{ ansible_net_model }}"
+        vars:
+          ansible_command_timeout: 900
         net_put:
           src: "{{ ios_path }}{{ ios_gold_file }}"
           dest : "{{ ios_gold_file }}"
@@ -83,10 +85,10 @@
               prompt: '[confirm]'
               answer: "\r"
         when: reboot # Usefull to optimizing other task, just for troubleshooting
-    #We need to make sure the current connection to the network device is closed so that the socket can be reestablished 
-    #to the network device after the reboot takes place.  If the connection is not closed and the command timeout is longer 
-    #than the time it takes to reboot, the persistent connection will attempt to reuse the closed SSH connection resulting in the failure 
-    #“Socket is closed”. A correct Ansible Playbook looks like this:
+      #We need to make sure the current connection to the network device is closed so that the socket can be reestablished 
+      #to the network device after the reboot takes place.  If the connection is not closed and the command timeout is longer 
+      #than the time it takes to reboot, the persistent connection will attempt to reuse the closed SSH connection resulting in the failure 
+      #“Socket is closed”. A correct Ansible Playbook looks like this:
       - name: "SYS >>reset the connection"
         meta: reset_connection
       
